@@ -1,0 +1,14 @@
+#ignore all node modules
+node_modules
+
+#ignore all bower components
+bower_components
+
+#ignore all dist files
+dist
+
+#ignore all build files
+build
+
+#ignore all coverage files
+coverage
