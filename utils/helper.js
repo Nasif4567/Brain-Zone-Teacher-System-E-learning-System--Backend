@@ -1,3 +1,4 @@
+require('dotenv').config()
 const connection = require('./db');
 function checkIfExists(column, value) {
     return new Promise((resolve, reject) => {

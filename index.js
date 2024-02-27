@@ -4,6 +4,7 @@ require('dotenv').config()
 const express = require("express");
 const connection = require('./utils/db');
 const registerRoute = require('./routes/register');
+const courseRoute = require('./routes/course');
 const dotenv = require('dotenv')
 
 // Create an Express application
@@ -15,6 +16,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Use the register route
 app.use("/register", registerRoute);
+
+// Use the course route
+app.use("/course", courseRoute);
 
 // Define routes
 
