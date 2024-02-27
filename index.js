@@ -1,7 +1,10 @@
+require('dotenv').config()
+
 // Import necessary modules
 const express = require("express");
 const connection = require('./utils/db');
 const registerRoute = require('./routes/register');
+const dotenv = require('dotenv')
 
 // Create an Express application
 const app = express();

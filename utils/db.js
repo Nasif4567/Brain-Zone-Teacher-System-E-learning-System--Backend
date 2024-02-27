@@ -1,9 +1,14 @@
 const mysql = require('mysql');
-
+const host = process.env.HOST   
+const user = process.env.DB_USER 
+const database = process.env.DATABASE
+const password = process.env.DB_PASSWORD ? process.env.DB_PASSWORD : '';
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'student_portal'
+    host: host,
+    user: user,
+    database: database,
+    password: password ? password : ''
+
 });
 
 connection.connect((err) => {

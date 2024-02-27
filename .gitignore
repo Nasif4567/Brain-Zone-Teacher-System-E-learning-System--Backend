@@ -12,3 +12,9 @@ build
 
 #ignore all coverage files
 coverage
+
+#ignore all logs
+logs
+
+#ignore .env file
+.env
