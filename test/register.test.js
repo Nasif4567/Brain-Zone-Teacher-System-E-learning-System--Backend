@@ -6,10 +6,10 @@ test('checkIfExists function', async () => {
     const result = await checkIfExists('username', 'testuser');
     expect(result).toBe(false);
 
-    const result2 = await checkIfExists('email', 'demo@gmail.com');
+    const result2 = await checkIfExists('email', 'johndoe1@gmail.com');
     expect(result2).toBe(false);
 
-    const result3 = await checkIfExists('username', 'arbaazmir');
+    const result3 = await checkIfExists('username', 'johndoe');
     expect(result3).toBe(true);
 
 
@@ -27,7 +27,7 @@ test('register route', async () => {
             email: 'demo@gmail.com',
             role: 'teacher',
             password: 'sha256life',
-            username: 'arbaazmir'
+            username: 'johndoe'
         })
     });
     const data = await response.text();
@@ -40,7 +40,7 @@ test('register route', async () => {
         },
         body: JSON.stringify({
             name: 'Test User',
-            email: 'nh1234566@gmail.com',
+            email: 'johndoe@demo.com',
             role: 'teacher',
             password: 'sha256life',
             username: 'testuser'

@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { checkIfExists } = require('../utils/helper');
 const connection = require('../utils/db');
+const {uid} = require('uid');
 
 router.post("/", async (req, res) => {
     const { name, email, role, password, username } = req.body;
@@ -21,9 +22,22 @@ router.post("/", async (req, res) => {
         if (emailExists) {
             return res.send("Email already exists");
         }
-
+        const userID = uid(16);
         // Insert into table Users
-        connection.query('INSERT INTO Users SET ?', {
+        /*
+        demo data
+        {
+            "name": "John Doe",
+            "email": "johndoe@demo.com"
+            "role": "teacher",
+            "password": "password",
+            "username": "johndoe"
+
+
+        }
+        */
+        connection.query('INSERT INTO users SET ?', {
+            userID: userID,
             name: name,
             email: email,
             role: role,

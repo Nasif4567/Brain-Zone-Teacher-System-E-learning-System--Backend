@@ -8,13 +8,16 @@ test('course route', async () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            title: 'Test Course',
-            type: 'free',
-            courseID: 111,
-            contentUrl: 'https://www.google.com',
-            username: 'arbaazmir',
-            createdAt: '2021-12-12',
-            description: 'This is a test course'
+            courseID: 'CS101',
+            courseName: 'Computer Science',
+            courseDescription: "This is a test course",
+            courseInstructor: "John Doe",
+            created_at: "2021-12-12",
+            updated_at: "2021-12-12",
+            userID: 123,
+            courseStatus: "active",
+            courseImage: "https://www.google.com",
+            username: "johndoe"
         })
     });
     const data = await response.text();
