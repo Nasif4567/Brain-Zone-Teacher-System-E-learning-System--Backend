@@ -6,9 +6,11 @@ const connection = require("./utils/db");
 const registerRoute = require("./routes/register");
 const courseRoute = require("./routes/course");
 const dotenv = require("dotenv");
+const loginRoute = require("./routes/login");
 
 // Create an Express application
 const app = express();
+
 
 // Middleware to parse JSON and URL-encoded bodies
 app.use(express.json());
@@ -16,6 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Use the register route
 app.use("/register", registerRoute);
+
+// Use the login route
+app.use("/login", loginRoute);
 
 // Use the course route
 app.use("/course", courseRoute);

@@ -60,6 +60,7 @@ router.post("/create", async (req, res) => {
           courseImage,
         },
         (insertError, insertResults) => {
+          connection.end();
           if (insertError) {
             console.error("Error executing SQL query:", insertError);
             res.send("Error in creating course");

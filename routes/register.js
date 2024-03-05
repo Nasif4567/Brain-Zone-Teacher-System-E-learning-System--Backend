@@ -1,4 +1,3 @@
-require('dotenv').config()
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -44,6 +43,7 @@ router.post("/", async (req, res) => {
             password: hashedPassword,
             username: username
         }, (error, results) => {
+            connection.end();
             if (error) {
                 console.log(error);
                 res.send("Error in registering user");
