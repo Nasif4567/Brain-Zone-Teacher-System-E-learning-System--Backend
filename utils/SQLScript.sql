@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS courses (
     teacherID VARCHAR(255) NOT NULL,
     courseStatus VARCHAR(255) NOT NULL,
     courseImage VARCHAR(255) NOT NULL,
+    courseRating DECIMAL(10, 2) NOT NULL,
+    studentEnrolled INT NOT NULL,
     FOREIGN KEY (teacherID) REFERENCES teachers(teacherID)
 );
 
