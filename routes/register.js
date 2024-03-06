@@ -35,11 +35,10 @@ router.post("/", async (req, res) => {
 
         }
         */
-        connection.query('INSERT INTO users SET ?', {
-            userID: userID,
+        connection.query('INSERT INTO teachers SET ?', {
+            teacherID: userID,
             name: name,
             email: email,
-            role: role,
             password: hashedPassword,
             username: username
         }, (error, results) => {

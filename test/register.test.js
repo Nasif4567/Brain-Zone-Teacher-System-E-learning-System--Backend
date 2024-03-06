@@ -25,7 +25,6 @@ test('register route', async () => {
         body: JSON.stringify({
             name: 'Test User',
             email: 'demo@gmail.com',
-            role: 'teacher',
             password: 'sha256life',
             username: 'johndoe'
         })
@@ -41,7 +40,6 @@ test('register route', async () => {
         body: JSON.stringify({
             name: 'Test User',
             email: 'johndoe@demo.com',
-            role: 'teacher',
             password: 'sha256life',
             username: 'testuser'
         })
@@ -57,7 +55,6 @@ test('register route', async () => {
         body: JSON.stringify({
             name: 'Test User',
             email: 'arbaazmir@icloud.com',
-            role: 'teacher',
             password: 'sha256life',
             username: 'abdullah'
         })

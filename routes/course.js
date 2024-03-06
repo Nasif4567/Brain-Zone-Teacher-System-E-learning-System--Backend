@@ -35,7 +35,7 @@ router.post("/create", async (req, res) => {
   } = req.body;
 
   connection.query(
-    "SELECT userID, name, username, email, role FROM users WHERE username = ?",
+    "SELECT teacherID, name, username, email FROM teachers WHERE username = ?",
     [username],
     (error, userResults) => {
       if (error) {
@@ -44,7 +44,7 @@ router.post("/create", async (req, res) => {
         return;
       }
 
-      const userID = userResults[0].userID;
+      const userID = userResults[0].teacherID;
 
       connection.query(
         "INSERT INTO coursesCreated SET ?",

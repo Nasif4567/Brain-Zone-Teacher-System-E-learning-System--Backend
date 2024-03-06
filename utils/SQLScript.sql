@@ -1,30 +1,36 @@
-CREATE DATABASE IF NOT EXISTS `llm-portal` 
+CREATE DATABASE IF NOT EXISTS `lms_portal`
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-USE `llm-portal`;
+USE `lms_portal`;
 
-CREATE TABLE IF NOT EXISTS users (
-    userID VARCHAR(255) NOT NULL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS teachers (
+    teacherID VARCHAR(255) NOT NULL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL, 
     email VARCHAR(255) NOT NULL,
-    role VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS coursesCreated (
+CREATE TABLE IF NOT EXISTS courses (
     courseID VARCHAR(255) NOT NULL PRIMARY KEY,
     courseName VARCHAR(255) NOT NULL,
     courseDescription TEXT NOT NULL,
+    courseCategory VARCHAR(255) NOT NULL,
+    courseDuration VARCHAR(255) NOT NULL,
+    coursePrice DECIMAL(10, 2) NOT NULL,
+    courseDifficulty VARCHAR(255) NOT NULL,
+    courseOutcome TEXT NOT NULL,
+    courseLanguage VARCHAR(255) NOT NULL,
     courseInstructor VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    userID VARCHAR(255) NOT NULL,
+    teacherID VARCHAR(255) NOT NULL,
     courseStatus VARCHAR(255) NOT NULL,
     courseImage VARCHAR(255) NOT NULL,
-    FOREIGN KEY (userID) REFERENCES users(userID)
+    FOREIGN KEY (teacherID) REFERENCES teachers(teacherID)
 );
 
 CREATE TABLE IF NOT EXISTS courseContent (
@@ -35,15 +41,22 @@ CREATE TABLE IF NOT EXISTS courseContent (
     contentURL VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (courseID) REFERENCES coursesCreated(courseID)
+    FOREIGN KEY (courseID) REFERENCES courses(courseID)
 );
 
-CREATE TABLE IF NOT EXISTS courseEnrollment (
-    enrollmentID VARCHAR(255) NOT NULL PRIMARY KEY,
+
+CREATE TABLE IF NOT EXISTS assessments (
+    assessmentID VARCHAR(255) NOT NULL PRIMARY KEY,
     courseID VARCHAR(255) NOT NULL,
-    userID VARCHAR(255) NOT NULL,
+    assessmentTitle VARCHAR(255) NOT NULL,
+    assessmentDescription TEXT NOT NULL,
+    assessmentURL VARCHAR(255) NOT NULL,
+    generateAIQuestion BOOLEAN NOT NULL,
+    contentID VARCHAR(255) NOT NULL,
+    courseContentID VARCHAR(255) NOT NULL,
+    assessmentDeadline TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (courseID) REFERENCES coursesCreated(courseID),
-    FOREIGN KEY (userID) REFERENCES users(userID)
+    FOREIGN KEY (courseID) REFERENCES courses(courseID),
+    FOREIGN KEY (courseContentID) REFERENCES courseContent(contentID)
 );
