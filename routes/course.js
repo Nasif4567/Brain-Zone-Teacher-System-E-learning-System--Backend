@@ -74,5 +74,57 @@ router.post("/create", async (req, res) => {
     }
   );
 });
+router.put("/update", async (req, res) => {
+  const {
+    courseID,
+    courseName,
+    courseDescription,
+    courseInstructor,
+    updated_at,
+    courseStatus,
+    courseImage,
+    username,
+  } = req.body;
+
+  connection.query(
+    "SELECT teacherID, name, username, email FROM teachers WHERE username = ?",
+    [username],
+    (error, userResults) => {
+      if (error) {
+        console.error("Error executing SQL query:", error);
+        res.send("Error in updating course");
+        return;
+      }
+
+      const userID = userResults[0].teacherID;
+
+      connection.query(
+        "UPDATE coursesCreated SET ? WHERE courseID = ?",
+        [
+          {
+            courseName,
+            courseDescription,
+            courseInstructor,
+            updated_at,
+            courseStatus,
+            courseImage,
+          },
+          courseID,
+        ],
+        (updateError, updateResults) => {
+          connection.end();
+          if (updateError) {
+            console.error("Error executing SQL query:", updateError);
+            res.send("Error in updating course");
+            return;
+          }
+
+          console.log("Course updated successfully");
+          res.send("Course updated successfully");
+        }
+      );
+    }
+  );
+});
 
 module.exports = router;
