@@ -7,10 +7,13 @@ const registerRoute = require("./routes/register");
 const courseRoute = require("./routes/course");
 const dotenv = require("dotenv");
 const loginRoute = require("./routes/login");
+const cors = require("cors");
 
 // Create an Express application
 const app = express();
 
+// Enable CORS
+app.use(cors());
 
 // Middleware to parse JSON and URL-encoded bodies
 app.use(express.json());
