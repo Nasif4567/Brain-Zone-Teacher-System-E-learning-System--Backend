@@ -15,7 +15,10 @@ const cookieParser = require("cookie-parser");
 const app = express();
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3001', // replace with your frontend address
+  credentials: true
+}));
 
 // Enable cookie parser
 app.use(cookieParser());

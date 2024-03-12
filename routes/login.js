@@ -7,7 +7,7 @@ const { checkIfExists } = require("../utils/helper");
 const { generateToken } = require("../utils/webToken");
 
 router.post("/", async (req, res) => {
-  const { email, password, username } = req.body;
+  const {  password, username } = req.body;
 
   try {
     const usernameExists = await checkIfExists("username", username);
@@ -30,8 +30,8 @@ router.post("/", async (req, res) => {
 
     //get the user from the database
     connection.query(
-      "SELECT * FROM teachers WHERE email = ?",
-      [email],
+      "SELECT * FROM teachers WHERE username = ?",
+      [username],
       (error, userResults) => {
         if (error) {
           console.error("Error executing SQL query:", error);
@@ -63,10 +63,21 @@ router.post("/", async (req, res) => {
             },
             tokenExpiresIn
             );
-            res.cookie("token", token, { httpOnly: true });
+            res.cookie('token', token, { httpOnly: true, sameSite: 'none'});
+           
 
-
-          return res.status(200).send("User logged in successfully");
+            
+          return res.status(200).send(
+            {
+              user:{
+                username: user.username,
+                email: user.email,
+                name: user.name
+              },
+              message : "User logged in successfully",
+              token : token
+            }
+          );
         });
       }
     );
