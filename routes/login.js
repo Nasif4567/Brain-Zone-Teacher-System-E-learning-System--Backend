@@ -4,14 +4,16 @@ const bcrypt = require("bcryptjs");
 const connection = require("../utils/db");
 const { uid } = require("uid");
 const { checkIfExists } = require("../utils/helper");
+const { generateToken } = require("../utils/webToken");
 
 router.post("/", async (req, res) => {
   const { email, password, username } = req.body;
 
   try {
     const usernameExists = await checkIfExists("username", username);
-    if (!usernameExists) {
-      return res.send("User does not exist");
+    
+    if (!usernameExists ) {
+      return res.status(400).send("User does not exist");
     }
 
     /* 
@@ -28,39 +30,46 @@ router.post("/", async (req, res) => {
 
     //get the user from the database
     connection.query(
-      "SELECT * FROM users WHERE email = ?",
+      "SELECT * FROM teachers WHERE email = ?",
       [email],
       (error, userResults) => {
         if (error) {
           console.error("Error executing SQL query:", error);
-          res.send("Error in logging user");
+          res.status(400).send("Error in logging user");
           return;
         }
 
         const user = userResults[0];
         if (!user) {
-          return res.send("User does not exist");
+          return res.status(400).send("User does not exist");
         }
 
         //check if the password is correct
         bcrypt.compare(password, user.password, (error, isPasswordCorrect) => {
           if (error) {
             console.error("Error comparing passwords:", error);
-            res.send("Error in logging user");
+            res.status(400).send("Error in logging user");
             return;
           }
 
           if (!isPasswordCorrect) {
-            return res.send("Password is incorrect");
+            return res.status(400).send("Password is incorrect");
           }
 
-          return res.send("User logged in successfully");
+           const token = generateToken({ 
+            username: user.username,
+            teacherID: user.teacherID,
+            });
+            res.cookie("token", token, { httpOnly: true });
+
+
+          return res.status(200).send("User logged in successfully");
         });
       }
     );
   } catch (error) {
     console.error(error);
-    res.send("Error in logging user");
+    res.status(400).send("Error in logging user");
   }
 });
 

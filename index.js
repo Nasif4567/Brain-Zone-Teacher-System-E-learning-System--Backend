@@ -7,6 +7,7 @@ const registerRoute = require("./routes/register");
 const courseRoute = require("./routes/course");
 const dotenv = require("dotenv");
 const loginRoute = require("./routes/login");
+const getUser = require("./routes/getUser");
 const cors = require("cors");
 
 // Create an Express application
@@ -24,6 +25,9 @@ app.use("/register", registerRoute);
 
 // Use the login route
 app.use("/login", loginRoute);
+
+// Use the getUser route
+app.use("/getUser", getUser);
 
 // Use the course route
 app.use("/course", courseRoute);
