@@ -2,78 +2,155 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../utils/db");
 const { checkIfExists } = require("../utils/helper");
+const {verifyToken} = require("../utils/webToken");
+const { uid } = require("uid");
 
 // Route to create a new course //	courseID 	courseName 	courseDescription 	courseInstructor 	created_at 	updated_at 	userID 	courseStatus 	courseImage
-// Need to add check for user signed in
 //demo data
 /*
 {
-    "courseID": 111,
-    "courseName": "Test Course",
-    "courseDescription": "This is a test course",
-    "courseInstructor": "John Doe",
-    "created_at": "2021-12-12",
-    "updated_at": "2021-12-12",
-    "username": "johndoe",
-    "courseStatus": "active",
-    "courseImage": "https://www.google.com"
+ 
+    "courseName": "Introduction to Machine Learning",
+    "courseDescription": "Learn the fundamentals of machine learning",
+    "courseCategory": "Data Science",
+    "courseDuration": "8 weeks",
+    "coursePrice": 99.99,
+    "courseDifficulty": "Intermediate",
+    "courseOutcome": "Understand machine learning concepts",
+    "courseLanguage": "English",
+    "courseStatus": "Active",
+    "courseImage": "intro_to_ml.jpg"
 }
+
 */
 
 router.post("/create", async (req, res) => {
   const {
-    courseID,
-    courseName,
-    courseDescription,
-    courseInstructor,
-    created_at,
-    updated_at,
-    userID,
-    courseStatus,
-    courseImage,
-    username,
+
+courseName,
+courseDescription,
+courseCategory,
+courseDuration,
+coursePrice,
+courseDifficulty,
+courseOutcome,
+courseLanguage,
+courseStatus,
+courseImage,
+
+   
   } = req.body;
 
+  if( !courseName || !courseDescription || !courseCategory || !courseDuration || !coursePrice || !courseDifficulty || !courseOutcome || !courseLanguage || !courseStatus || !courseImage){
+    return res.status(400).send("Please fill all the fields");
+  }
+
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(400).send("Token not provided");
+  }
+
+  try {
+  // connection.query(
+
+  //   "SELECT teacherID, name, username, email FROM teachers WHERE username = ?",
+  //   [username],
+  //   (error, userResults) => {
+  //     if (error) {
+  //       console.error("Error executing SQL query:", error);
+  //       res.send("Error in creating course");
+  //       return;
+  //     }
+
+  //     const userID = userResults[0].teacherID;
+
+  //     connection.query(
+  //       "INSERT INTO coursesCreated SET ?",
+  //       {
+  //         courseID,
+  //         courseName,
+  //         courseDescription,
+  //         courseInstructor,
+  //         created_at,
+  //         updated_at,
+  //         userID,
+  //         courseStatus,
+  //         courseImage,
+  //       },
+  //       (insertError, insertResults) => {
+  //         connection.end();
+  //         if (insertError) {
+  //           console.error("Error executing SQL query:", insertError);
+  //           res.send("Error in creating course");
+  //           return;
+  //         }
+
+  //         console.log("Course created successfully");
+  //         res.send("Course created successfully");
+  //       }
+  //     );
+  //   }
+  // );
+  const payload = verifyToken(token);
+  console.log(payload);
+  const { username } = payload;
+  
   connection.query(
     "SELECT teacherID, name, username, email FROM teachers WHERE username = ?",
     [username],
     (error, userResults) => {
       if (error) {
         console.error("Error executing SQL query:", error);
-        res.send("Error in creating course");
+        return res.status(500).send("Error in creating course");
         return;
       }
+      const teacherID = userResults[0].teacherID;
+      const name = userResults[0].name;
+      const courseID = uid(16);
 
-      const userID = userResults[0].teacherID;
+      
 
       connection.query(
-        "INSERT INTO coursesCreated SET ?",
+        "INSERT INTO courses SET ?",
         {
           courseID,
           courseName,
           courseDescription,
-          courseInstructor,
-          created_at,
-          updated_at,
-          userID,
+          courseCategory,
+          courseDuration,
+          coursePrice,
+          courseDifficulty,
+          courseOutcome,
+          courseLanguage,
           courseStatus,
           courseImage,
+          teacherID,
+          courseInstructor: name,
         },
         (insertError, insertResults) => {
           connection.end();
           if (insertError) {
             console.error("Error executing SQL query:", insertError);
-            res.send("Error in creating course");
+            res.status(500).send("Error in creating course");
             return;
           }
 
           console.log("Course created successfully");
-          res.send("Course created successfully");
+        return  res.status(200).send("Course created successfully");
         }
       );
     }
   );
+}
+  catch (error) {
+    console.error(error);
+    res.status(400).send("Error in creating course");
+  }
+
 });
+
+
+
 router.put("/update", async (req, res) => {
   const {
     courseID,

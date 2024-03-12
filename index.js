@@ -9,12 +9,16 @@ const dotenv = require("dotenv");
 const loginRoute = require("./routes/login");
 const getUser = require("./routes/getUser");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 // Create an Express application
 const app = express();
 
 // Enable CORS
 app.use(cors());
+
+// Enable cookie parser
+app.use(cookieParser());
 
 // Middleware to parse JSON and URL-encoded bodies
 app.use(express.json());

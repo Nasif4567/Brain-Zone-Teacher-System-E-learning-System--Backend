@@ -55,11 +55,14 @@ router.post("/", async (req, res) => {
           if (!isPasswordCorrect) {
             return res.status(400).send("Password is incorrect");
           }
+          const tokenExpiresIn = 60 * 60 * 24; // 24 hours
 
            const token = generateToken({ 
             username: user.username,
             teacherID: user.teacherID,
-            });
+            },
+            tokenExpiresIn
+            );
             res.cookie("token", token, { httpOnly: true });
 
 

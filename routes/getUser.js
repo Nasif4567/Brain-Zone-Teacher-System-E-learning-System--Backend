@@ -8,7 +8,7 @@ const { generateToken,verifyToken } = require("../utils/webToken");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 
-router.use(cookieParser());
+
 
 
 router.get("/", async (req, res) => {
