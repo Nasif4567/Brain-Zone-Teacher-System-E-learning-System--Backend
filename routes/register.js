@@ -59,7 +59,17 @@ router.post("/", async (req, res) => {
           const token = generateToken({ username, userID });
           res.cookie("token", token, { httpOnly: true });
 
-          res.status(200).send("User registered successfully");
+          res.status(200).send(
+            {
+              user: {
+                username: username,
+                email: email,
+                name: name,
+              },
+              message: "User registered successfully",
+              token: token,
+            }
+          );
         }
       }
     );
