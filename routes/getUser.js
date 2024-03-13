@@ -1,11 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
 const connection = require("../utils/db");
-const { uid } = require("uid");
-const { checkIfExists } = require("../utils/helper");
-const { generateToken,verifyToken } = require("../utils/webToken");
-const cookieParser = require("cookie-parser");
+const {verifyToken } = require("../utils/webToken");
 const jwt = require("jsonwebtoken");
 
 
@@ -20,7 +16,7 @@ router.get("/", async (req, res) => {
 
     try {
         const payload = verifyToken(token);
-        console.log(payload);
+    
         const { username } = payload;
         
         //get the user from the database
