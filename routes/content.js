@@ -100,7 +100,25 @@ router.get("/:courseID", (req, res) => {
         return;
       }
 
-      res.status(200).send(results);
+      //get the course details
+      connection.query(
+        "SELECT * FROM courses WHERE courseID = ?",
+        [courseID],
+        (error, course) => {
+          if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching content");
+            return;
+          }
+
+          res.status(200).send({
+            course: course[0],
+            content: results,
+          });
+        }
+      );
+
+      
     }
   );
 });

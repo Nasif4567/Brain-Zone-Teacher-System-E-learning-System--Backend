@@ -17,7 +17,7 @@ const app = express();
 
 // Enable CORS
 app.use(cors({
-  origin: 'http://localhost:3001', // replace with your frontend address
+  origin: 'http://localhost:3000', 
   credentials: true
 }));
 
@@ -56,7 +56,7 @@ app.get("/", (req, res) => {
 });
 
 // Start the server
-const PORT = 3000;
+const PORT = 3002;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
