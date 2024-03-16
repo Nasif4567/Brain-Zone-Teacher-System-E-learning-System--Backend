@@ -14,14 +14,15 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    const contentID = uid(10);
-    cb(null, `${contentID}${path.extname(file.originalname)}`);
+    cb(null, file.originalname);
   },
 });
 
 const upload = multer({ storage: storage });
 
 router.post("/upload/:courseID", upload.single("file"), (req, res) => {
+  //get the id from param
+
   const token = req.cookies.token;
   if (!token) {
     return res.status(400).send("Token not provided");
@@ -58,17 +59,16 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
     return res.status(400).send("Please upload a file");
   }
 
-  const contentID = path.basename(file.path, path.extname(file.path));
-  const contentURL = `http://localhost:3000/content/${courseID}/${file.filename}`;
+  const contentID = uid(16);
+  const contentURL = `http://localhost:3000/content/${courseID}/${file.originalname}`;
 
   connection.query(
     "INSERT INTO courseContent SET ?",
     {
       contentID,
       courseID,
-      title,
-      description,
-      type,
+      contentTitle: title,
+      contentDescription: description,
       contentURL,
     },
 
@@ -79,7 +79,10 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
         return;
       }
 
-      res.status(200).send("Content created successfully");
+      res.status(200).send({
+        message: "Content created successfully",
+        contentID,
+      });
     }
   );
 });

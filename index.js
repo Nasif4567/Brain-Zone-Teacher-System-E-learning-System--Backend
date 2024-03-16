@@ -10,6 +10,7 @@ const loginRoute = require("./routes/login");
 const getUser = require("./routes/getUser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const contentRoute = require("./routes/content");
 
 // Create an Express application
 const app = express();
@@ -22,6 +23,9 @@ app.use(cors({
 
 // Enable cookie parser
 app.use(cookieParser());
+
+//static files
+app.use('/content', express.static('./content'));
 
 // Middleware to parse JSON and URL-encoded bodies
 app.use(express.json());
@@ -38,6 +42,11 @@ app.use("/getUser", getUser);
 
 // Use the course route
 app.use("/course", courseRoute);
+
+// Use the content route
+app.use("/content", contentRoute);
+
+
 
 // Define routes
 
