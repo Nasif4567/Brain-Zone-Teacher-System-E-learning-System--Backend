@@ -87,4 +87,24 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
   );
 });
 
+router.get("/:courseID", (req, res) => {
+  const { courseID } = req.params;
+
+  connection.query(
+    "SELECT * FROM courseContent WHERE courseID = ?",
+    [courseID],
+    (error, results) => {
+      if (error) {
+        console.error("Error executing SQL query:", error);
+        res.status(500).send("Error in fetching content");
+        return;
+      }
+
+      res.status(200).send(results);
+    }
+  );
+});
+
+
+
 module.exports = router;

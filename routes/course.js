@@ -206,4 +206,54 @@ router.put("/update", async (req, res) => {
   );
 });
 
+router.get("/allCourses", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(400).send("Token not provided");
+  }
+  const payload = verifyToken(token);
+ 
+  const { username } = payload;
+  console.log(username);
+
+  connection.query(
+    "SELECT teacherID FROM teachers WHERE username = ?",
+    [username],
+    (error, results) => {
+      if (error) {
+        console.error("Error executing SQL query:", error);
+        res.status(500).send("Error in fetching courses");
+        return;
+      }
+
+      if (results.length === 0) {
+        return res.status(400).send("Teacher not found");
+      }
+
+      const teacherID = results[0].teacherID;
+      console.log(teacherID);
+      connection.query(
+        "SELECT * FROM courses WHERE teacherID = ?",
+        [teacherID],
+        (error, results) => {
+          if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching courses");
+            return;
+          }
+          console.log(results);
+
+          res.status(200).send(results);
+        }
+      );
+    }
+  );
+
+
+
+
+
+});
+
+
 module.exports = router;
