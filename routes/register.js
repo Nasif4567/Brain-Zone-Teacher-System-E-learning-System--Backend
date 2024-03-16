@@ -56,7 +56,8 @@ router.post("/", async (req, res) => {
 
           res.status(400).send("Error in registering user");
         } else {
-          const token = generateToken({ username, userID });
+          const tokenExpiresIn = 60 * 60 * 24 * 7; // 1 week
+          const token = generateToken({ username, userID }, tokenExpiresIn);
           res.cookie("token", token, { httpOnly: true });
 
           res.status(200).send(

@@ -37,7 +37,7 @@ router.post('/', [
         if (!isPasswordCorrect) {
           return res.status(400).send("Password is incorrect");
         }
-        const tokenExpiresIn = 60 * 60 * 24; // 24 hours
+        const tokenExpiresIn = 60 * 60 * 24 * 7; // 1 week
 
         const token = generateToken({ 
           username: user.username,
