@@ -130,6 +130,81 @@ router.get("/:courseID", (req, res) => {
   );
 });
 
+router.put("/:courseID", upload.single("file"), (req, res) => {
+  const { courseID } = req.params;
+  const { file } = req;
+  const { title, description,contentID ,deleteExistingFile} = req.body;
+
+  if (!title || !description) {
+    return res.status(400).send("Please fill in all fields");
+  }
+
+  if (!file) {
+    if(deleteExistingFile){
+      connection.query(
+        "UPDATE courseContent SET contentTitle = ?, contentDescription = ?, contentURL = ?, fileType = ? WHERE contentID = ?",
+        [title, description, null, null, contentID],
+        (error, results) => {
+          if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in updating content");
+            return;
+          }
+    
+          res.status(200).send("Content updated successfully");
+          return;
+        }
+      );
+
+    }
+
+
+    connection.query(
+      "UPDATE courseContent SET contentTitle = ?, contentDescription = ? WHERE contentID = ?",
+      [title, description, contentID],
+      (error, results) => {
+        if (error) {
+          console.error("Error executing SQL query:", error);
+          res.status(500).send("Error in updating content");
+          return;
+        }
+
+        res.status(200).send("Content updated successfully");
+      }
+    );
+  } else {
+
+    
+    const port = process.env.PORT || 3002;
+    const contentURL = `http://localhost:${port}/content/${courseID}/${file.originalname}`;
+    const fileType = file.mimetype;
+    
+
+    connection.query(
+      "UPDATE courseContent SET contentTitle = ?, contentDescription = ?, contentURL = ?, fileType = ? WHERE contentID = ?",
+      [title, description, contentURL, fileType, contentID],
+      (error, results) => {
+        if (error) {
+          console.error("Error executing SQL query:", error);
+          res.status(500).send("Error in updating content");
+          return;
+        }
+
+        res.status(200).send(
+          {
+            message: "Content updated successfully",
+            fileType,
+            contentURL,
+           contentTitle: title,
+            contentDescription: description,
+            
+
+          }
+        );
+      }
+    );
+  }
+});
 
 
 module.exports = router;
