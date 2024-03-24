@@ -18,3 +18,5 @@ logs
 
 #ignore .env file
 .env
+#ignore files in /content folder
+/content/*

@@ -51,16 +51,17 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
   const { file } = req;
   const { title, description, type } = req.body;
 
-  if (!title || !description || !type) {
+  if (!title || !description ) {
     return res.status(400).send("Please fill in all fields");
   }
 
   if (!file) {
     return res.status(400).send("Please upload a file");
   }
-
+  const port = process.env.PORT || 3002;
   const contentID = uid(16);
-  const contentURL = `http://localhost:3000/content/${courseID}/${file.originalname}`;
+  const contentURL = `http://localhost:${port}/content/${courseID}/${file.originalname}`;
+  const fileType = file.mimetype;
 
   connection.query(
     "INSERT INTO courseContent SET ?",
@@ -70,6 +71,7 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
       contentTitle: title,
       contentDescription: description,
       contentURL,
+      fileType: fileType.toString(),
     },
 
     (error, results) => {
@@ -82,6 +84,8 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
       res.status(200).send({
         message: "Content created successfully",
         contentID,
+        fileType,
+        contentURL,
       });
     }
   );
@@ -89,9 +93,10 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
 
 router.get("/:courseID", (req, res) => {
   const { courseID } = req.params;
-
+  console.log(courseID);
+  //get the course content sorted by created_at
   connection.query(
-    "SELECT * FROM courseContent WHERE courseID = ?",
+    "SELECT * FROM courseContent WHERE courseID = ? ORDER BY created_at ASC",
     [courseID],
     (error, results) => {
       if (error) {
@@ -100,7 +105,7 @@ router.get("/:courseID", (req, res) => {
         return;
       }
 
-      //get the course details
+      //get the course details 
       connection.query(
         "SELECT * FROM courses WHERE courseID = ?",
         [courseID],
@@ -110,6 +115,8 @@ router.get("/:courseID", (req, res) => {
             res.status(500).send("Error in fetching content");
             return;
           }
+
+          console.log(course);
 
           res.status(200).send({
             course: course[0],
