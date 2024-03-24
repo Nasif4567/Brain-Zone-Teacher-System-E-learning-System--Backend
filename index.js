@@ -11,6 +11,7 @@ const getUser = require("./routes/getUser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const contentRoute = require("./routes/content");
+const assestmentRoute = require("./routes/assestment");
 
 // Create an Express application
 const app = express();
@@ -45,6 +46,10 @@ app.use("/course", courseRoute);
 
 // Use the content route
 app.use("/content", contentRoute);
+
+
+// Use the assestment route
+app.use("/assestment", assestmentRoute);
 
 
 
