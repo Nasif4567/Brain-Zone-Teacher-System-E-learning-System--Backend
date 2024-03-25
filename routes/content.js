@@ -206,5 +206,41 @@ router.put("/:courseID", upload.single("file"), (req, res) => {
   }
 });
 
+router.delete("/:contentID", (req, res) => {
+  const { contentID } = req.params;
+  connection.query(
+    "SELECT * FROM courseContent WHERE contentID = ?",
+    [contentID],
+    (error, results) => {
+      if (error) {
+        console.error("Error executing SQL query:", error);
+        res.status(500).send("Error in deleting content");
+        return;
+      }
+
+      if (results.length === 0) {
+        return res.status(400).send("Content not found");
+      }
+
+      const filePath = results[0].contentURL.split("http://localhost:3002")[1];
+      fs.unlinkSync(path.join(__dirname, "..", filePath));
+
+      connection.query(
+        "DELETE FROM courseContent WHERE contentID = ?",
+        [contentID],
+        (error, results) => {
+          if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in deleting content");
+            return;
+          }
+
+          res.status(200).send("Content deleted successfully");
+        }
+      );
+    }
+  );
+});
+
 
 module.exports = router;

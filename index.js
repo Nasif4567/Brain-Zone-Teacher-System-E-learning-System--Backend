@@ -13,12 +13,16 @@ const cookieParser = require("cookie-parser");
 const contentRoute = require("./routes/content");
 const assestmentRoute = require("./routes/assestment");
 
+
 // Create an Express application
 const app = express();
 
+//sanitizer
+app.use(require('sanitize').middleware);
+
 // Enable CORS
 app.use(cors({
-  origin: 'http://localhost:3000', 
+  origin: 'http://localhost:3001' , 
   credentials: true
 }));
 

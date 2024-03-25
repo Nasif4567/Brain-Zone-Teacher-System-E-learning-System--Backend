@@ -155,5 +155,46 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
 
 
 });
+router.get("/all/:courseID", (req, res) => {
+    const { courseID } = req.params;
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(400).send("Token not provided");
+    }
+    const payload = verifyToken(token);
+    const { username } = payload;
+    connection.query(
+        "SELECT teacherID FROM teachers WHERE username = ?",
+        [username],
+        (error, results) => {
+        if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching content");
+            return;
+        }
+    
+        if (results.length === 0) {
+            return res.status(400).send("Teacher not found");
+        }
+        }
+    );
+
+    
+
+
+    connection.query(
+        "SELECT * FROM assessments WHERE courseID = ?",
+        [courseID],
+        (error, results) => {
+        if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching content");
+            return;
+        }
+    
+        res.status(200).send(results);
+        }
+    );
+})
 
 module.exports = router;
