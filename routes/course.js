@@ -256,4 +256,111 @@ router.get("/allCourses", (req, res) => {
 });
 
 
+// route needs fixing
+router.delete("/delete", (req, res) => {
+  const { courseID } = req.body;
+  
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(400).send("Token not provided");
+  }
+  const payload = verifyToken(token);
+  const { username } = payload;
+  connection.query(
+    "SELECT teacherID FROM teachers WHERE username = ?",
+    [username],
+    (error, results) => {
+      if (error) {
+        console.error("Error executing SQL query:", error);
+        res.status(500).send("Error in fetching courses");
+        return;
+      }
+
+      if (results.length === 0) {
+        return res.status(400).send("Teacher not found");
+      }
+
+      const teacherID = results[0].teacherID;
+      connection.query(
+        "SELECT * FROM courses WHERE teacherID = ? AND courseID = ?",
+        [teacherID, courseID],
+        (error, results) => {
+          if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching courses");
+            return;
+          }
+          if (results.length === 0) {
+            return res.status(400).send("Course not found");
+          }
+     
+connection.query(
+  "SELECT contentID FROM courseContent WHERE courseID = ?",
+  [courseID],
+  (error, results) => {
+    if (error) {
+      console.error("Error executing SQL query:", error);
+      res.status(500).send("Error in fetching course content");
+      return;
+    }
+    const contentIDs = results.map(result => result.contentID);
+    contentIDs.forEach(contentID => {
+      connection.query(
+        "DELETE FROM assessments WHERE courseContentID = ?",
+        [contentID],
+        (error, results) => {
+          if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in deleting assessments");
+            return;
+          }
+        }
+      );
+    });
+    //delete courseContent
+    connection.query(
+      "DELETE FROM courseContent WHERE courseID = ?",
+      [courseID],
+      (error, results) => {
+        if (error) {
+          console.error("Error executing SQL query:", error);
+          res.status(500).send("Error in deleting course content");
+          return;
+        }
+       
+        connection.query(
+          "DELETE FROM assessments WHERE courseID = ?",
+          [courseID],
+          (error, results) => {
+            if (error) {
+              console.error("Error executing SQL query:", error);
+              res.status(500).send("Error in deleting assessments");
+              return;
+            }
+          }
+        );
+
+        //delete course
+        connection.query(
+          "DELETE FROM courses WHERE courseID = ?",
+          [courseID],
+          (error, results) => {
+            if (error) {
+              console.error("Error executing SQL query:", error);
+              res.status(500).send("Error in deleting course");
+              return;
+            }
+            res.status(200).send("Course deleted successfully");
+          }
+        );
+      }
+    );
+  }
+);
+        }
+      );
+    }
+  );
+});
+
 module.exports = router;
