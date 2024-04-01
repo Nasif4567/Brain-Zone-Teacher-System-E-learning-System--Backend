@@ -87,3 +87,26 @@ CREATE TABLE IF NOT EXISTS assessments (
     FOREIGN KEY (courseID) REFERENCES courses(courseID),
     FOREIGN KEY (courseContentID) REFERENCES courseContent(contentID)
 );
+
+CREATE TABLE IF NOT EXISTS discussion (
+    discussion_id VARCHAR(255) NOT NULL PRIMARY KEY,
+    course_id VARCHAR(255) NOT NULL,
+    Question VARCHAR(255) NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(courseID),
+    FOREIGN KEY (created_by) REFERENCES users(userID)
+
+    
+);
+CREATE TABLE IF NOT EXISTS messages (
+    message_id VARCHAR(255) NOT NULL PRIMARY KEY,
+    discussion_id VARCHAR(255) NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (discussion_id) REFERENCES discussion(discussion_id),
+    FOREIGN KEY (created_by) REFERENCES teachers(teacherID)
+);

@@ -12,6 +12,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const contentRoute = require("./routes/content");
 const assestmentRoute = require("./routes/assestment");
+const forumRoute = require("./routes/forum");
+const { uid } = require("uid");
 
 
 // Create an Express application
@@ -55,6 +57,27 @@ app.use("/content", contentRoute);
 // Use the assestment route
 app.use("/assestment", assestmentRoute);
 
+app.use("/forum", forumRoute);
+
+// app.post('/create-user', (req, res) => {
+//   const { username, password, email,name } = req.body;
+//   const userID = uid(10);
+//   connection.query(
+//     "INSERT INTO users (userID, username, password, email,name) VALUES (?, ?, ?, ?, ?)",
+//     [userID, username, password, email,name],
+//     (error, results) => {
+//       if (error) {
+//         console.error("Error executing SQL query:", error);
+//         res.status(500).send("Error in creating user");
+//         return;
+//       }
+
+//       res.send("User created successfully");
+//     }
+//   );
+
+  
+// });
 
 
 // Define routes
