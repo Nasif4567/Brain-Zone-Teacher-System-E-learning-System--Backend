@@ -16,7 +16,6 @@ const forumRoute = require("./routes/forum");
 const { uid } = require("uid");
 
 
-// Create an Express application
 const app = express();
 
 //sanitizer

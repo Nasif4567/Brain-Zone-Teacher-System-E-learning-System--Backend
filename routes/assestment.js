@@ -293,4 +293,130 @@ router.post('/upload/:courseID',  (req, res) => {
 
 })
 
+
+router.get('/allByTeacher', (req, res) => {
+    
+   
+    const token   = req.cookies.token;
+    if (!token) {
+        return res.status(400).send("Token not provided");
+    }
+    const payload = verifyToken(token);
+    const { username } = payload;
+    let teacherID;
+
+    connection.query(
+        "SELECT teacherID FROM teachers WHERE username = ?",
+        [username],
+        (error, results) => {
+        if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching content");
+            return;
+        }
+    
+        if (results.length === 0) {
+            return res.status(400).send("Teacher not found");
+        }
+        teacherID = results[0].teacherID;
+        const sql = `
+    SELECT a.*
+    FROM assessments a
+    JOIN courses c ON a.courseID = c.courseID
+    WHERE c.teacherID = ?;
+  `;
+    //get all assestments from the courses of the teacher , assesstments are linked to courses and courses are linked to teacherID
+    connection.query(
+        sql,
+        [teacherID],
+        (error, results) => {
+        if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in fetching content");
+            return;
+        }
+       res.status(200).send(results);
+        }
+        
+    );
+        }
+    );
+
+
+
+
+    
+   
+
+});
+
+router.delete('/delete/:assessmentID', (req, res) => {
+    const { assessmentID } = req.params;
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(400).send("Token not provided");
+    }
+    const payload = verifyToken(token);
+    const { username } = payload;
+    let teacherID;
+    
+
+
+    //delete the assestment by id
+    connection.query(
+        "DELETE FROM assessments WHERE assessmentID = ?",
+        [assessmentID],
+        (error, results) => {
+        if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in deleting content");
+            return;
+        }
+
+        res.status(200).send("Content deleted successfully");
+        }
+    );
+});
+
+router.put('/update/:assessmentID', (req, res) => {
+    const { assessmentID } = req.params;
+    console.log(assessmentID);
+    const { title, description,questionJSON,generateAIQuestion,assessmentDeadline } = req.body;
+  console.log(req.body);
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(400).send("Token not provided");
+    }
+    const payload = verifyToken(token);
+    const { username } = payload;
+   //update the assestment by id
+   let date = new Date(assessmentDeadline)
+let mysqlFormatDate = date.toISOString().slice(0, 19).replace('T', ' ');
+    connection.query(
+        "UPDATE assessments SET assessmentTitle = ?, assessmentDescription = ?, questionsJson = ?, generateAIQuestion = ?, assessmentDeadline = ? WHERE assessmentID = ?",
+        [title, description, questionJSON, generateAIQuestion ? 1 : 0, mysqlFormatDate, assessmentID],
+        (error, results) => {
+        if (error) {
+            console.error("Error executing SQL query:", error);
+            res.status(500).send("Error in updating content");
+            return;
+        }
+
+        res.status(200).send(
+            {
+            message: "Content updated successfully",
+            title,
+            description,
+            questionJSON,
+            generateAIQuestion,
+            assessmentDeadline
+            }
+        );
+        }
+    );
+
+
+    
+});
+
 module.exports = router;
