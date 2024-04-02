@@ -49,112 +49,112 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/upload/:courseID", upload.single("file"), (req, res) => {
+// router.post("/upload/:courseID", upload.single("file"), (req, res) => {
 
   
 
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(400).send("Token not provided");
-  }
-  const payload = verifyToken(token);
+//   const token = req.cookies.token;
+//   if (!token) {
+//     return res.status(400).send("Token not provided");
+//   }
+//   const payload = verifyToken(token);
   
-  const { username } = payload;
+//   const { username } = payload;
 
-  connection.query(
-    "SELECT teacherID FROM teachers WHERE username = ?",
-    [username],
-    (error, results) => {
-      if (error) {
-        console.error("Error executing SQL query:", error);
-        res.status(500).send("Error in creating content");
-        return;
-      }
+//   connection.query(
+//     "SELECT teacherID FROM teachers WHERE username = ?",
+//     [username],
+//     (error, results) => {
+//       if (error) {
+//         console.error("Error executing SQL query:", error);
+//         res.status(500).send("Error in creating content");
+//         return;
+//       }
 
-      if (results.length === 0) {
-        return res.status(400).send("Teacher not found");
-      }
-    }
-  );
+//       if (results.length === 0) {
+//         return res.status(400).send("Teacher not found");
+//       }
+//     }
+//   );
 
-  const { courseID } = req.params;
-  const { file } = req;
-  const { title, description,questionJSON,generateAIQuestion,assessmentDeadline } = req.body;
+//   const { courseID } = req.params;
+//   const { file } = req;
+//   const { title, description,questionJSON,generateAIQuestion,assessmentDeadline } = req.body;
 
-  if (!title || !description) {
-    return res.status(400).send("Please fill in all fields");
-  }
+//   if (!title || !description) {
+//     return res.status(400).send("Please fill in all fields");
+//   }
 
-  if (!file && !questionJSON) {
-    return res.status(400).send("Please upload a file or provide a question");
-  }
-  let typeOfFile;
-  if(file ){
+//   if (!file && !questionJSON) {
+//     return res.status(400).send("Please upload a file or provide a question");
+//   }
+//   let typeOfFile;
+//   if(file ){
 
-    typeOfFile = file.mimetype.split("/")[0];
+//     typeOfFile = file.mimetype.split("/")[0];
 
 
-    if (typeOfFile !== "application" && typeOfFile !== "text") {
-      return res.status(400).send("Please upload a valid file");
-    }
+//     if (typeOfFile !== "application" && typeOfFile !== "text") {
+//       return res.status(400).send("Please upload a valid file");
+//     }
     
-  }
+//   }
  
-    connection.query(
-        "SELECT * FROM courses WHERE courseID = ?",
-        [courseID],
-        (error, results) => {
-        if (error) {
-            console.error("Error executing SQL query:", error);
-            res.status(500).send("Error in creating content");
-            return;
-        }
+//     connection.query(
+//         "SELECT * FROM courses WHERE courseID = ?",
+//         [courseID],
+//         (error, results) => {
+//         if (error) {
+//             console.error("Error executing SQL query:", error);
+//             res.status(500).send("Error in creating content");
+//             return;
+//         }
     
-        if (results.length === 0) {
-            return res.status(400).send("Course not found");
-        }
-        }
-    );
+//         if (results.length === 0) {
+//             return res.status(400).send("Course not found");
+//         }
+//         }
+//     );
 
 
-  // assessmentID 	courseID 	assessmentTitle 	assessmentDescription 	assessmentURL 	generateAIQuestion 	 	assessmentDeadline 	created_at 	updated_at 	questionsJson 
-    const assessmentID = uid(16);
-    const questionFileType = file ? typeOfFile : "json";
+//   // assessmentID 	courseID 	assessmentTitle 	assessmentDescription 	assessmentURL 	generateAIQuestion 	 	assessmentDeadline 	created_at 	updated_at 	questionsJson 
+//     const assessmentID = uid(16);
+//     const questionFileType = file ? typeOfFile : "json";
    
-    const assessmentURL = `http://localhost:3000/assestment/${courseID}/${assessmentID}/${file ? file.originalname : "question.json"}`;
-    connection.query(
-        "INSERT INTO assessments SET ?",
-        {
-        assessmentID,
-        courseID,
-        assessmentTitle: title,
-        assessmentDescription: description,
-        assessmentURL,
-       questionFileType,
-         generateAIQuestion: generateAIQuestion ? 1 : 0,
-        questionsJson: JSON.stringify(questionJSON),
-        assessmentDeadline
+//     const assessmentURL = `http://localhost:3000/assestment/${courseID}/${assessmentID}/${file ? file.originalname : "question.json"}`;
+//     connection.query(
+//         "INSERT INTO assessments SET ?",
+//         {
+//         assessmentID,
+//         courseID,
+//         assessmentTitle: title,
+//         assessmentDescription: description,
+//         assessmentURL,
+//        questionFileType,
+//          generateAIQuestion: generateAIQuestion ? 1 : 0,
+//         questionsJson: JSON.stringify(questionJSON),
+//         assessmentDeadline
 
-        },
+//         },
     
-        (error, results) => {
-        if (error) {
-            console.error("Error executing SQL query:", error);
-            res.status(500).send("Error in creating content");
-            return;
-        }
+//         (error, results) => {
+//         if (error) {
+//             console.error("Error executing SQL query:", error);
+//             res.status(500).send("Error in creating content");
+//             return;
+//         }
     
-        res.status(200).send({
-            message: "Content created successfully",
-            assessmentID: assessmentID,
+//         res.status(200).send({
+//             message: "Content created successfully",
+//             assessmentID: assessmentID,
 
-        });
-        }
-    );
+//         });
+//         }
+//     );
 
 
 
-});
+// });
 router.get("/all/:courseID", (req, res) => {
     const { courseID } = req.params;
     const token = req.cookies.token;
@@ -191,10 +191,106 @@ router.get("/all/:courseID", (req, res) => {
             res.status(500).send("Error in fetching content");
             return;
         }
+        // const questionJSON = results.map((result) => {
+        //     return {
+        //         assessmentID: result.assessmentID,
+        //         courseID: result.courseID,
+        //         title: result.assessmentTitle,
+        //         description: result.assessmentDescription,
+        //         assessmentDeadline: result.assessmentDeadline,
+        //         generateAIQuestion: result.generateAIQuestion,
+        //         questionFileType: result.questionFileType,
+        //         questionJSON: JSON.parse(result.questionsJson),
+        //         assessmentURL: result.assessmentURL,
+        //     };
+        // });
+        // console.log(questionJSON);
     
         res.status(200).send(results);
         }
     );
+})
+
+router.post('/upload/:courseID',  (req, res) => {
+  //json questions only 
+  const { courseID } = req.params;
+  const { title, description,questionJSON,generateAIQuestion,assessmentDeadline } = req.body;
+  console.log(req.body);
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(400).send("Token not provided");
+  }
+  const payload = verifyToken(token);
+  const { username } = payload;
+  
+  connection.query(
+      "SELECT teacherID FROM teachers WHERE username = ?",
+      [username],
+      (error, results) => {
+      if (error) {
+          console.error("Error executing SQL query:", error);
+          res.status(500).send("Error in creating content");
+          return;
+      }
+  
+      if (results.length === 0) {
+          return res.status(400).send("Teacher not found");
+      }
+      }
+  );
+  connection.query(
+      "SELECT * FROM courses WHERE courseID = ?",
+      [courseID],
+      (error, results) => {
+      if (error) {
+          console.error("Error executing SQL query:", error);
+          res.status(500).send("Error in creating content");
+          return;
+      }
+  
+      if (results.length === 0) {
+          return res.status(400).send("Course not found");
+      }
+      }
+  );
+
+  const assessmentID = uid(16);
+  const questionFileType = "json";
+  const assessmentURL = `http://localhost:3000/assestment/${courseID}/${assessmentID}/question.json`;
+  connection.query(
+      "INSERT INTO assessments SET ?",
+      {
+      assessmentID,
+      courseID,
+      assessmentTitle: title,
+      assessmentDescription: description,
+      assessmentURL,
+     questionFileType,
+       generateAIQuestion: generateAIQuestion ? 1 : 0,
+      questionsJson: questionJSON,
+      assessmentDeadline
+
+      },
+  
+      (error, results) => {
+      if (error) {
+          console.error("Error executing SQL query:", error);
+          res.status(500).send("Error in creating content");
+          return;
+      }
+  
+      res.status(200).send({
+          message: "Content created successfully",
+          assessmentID: assessmentID,
+
+      });
+      }
+  );
+
+
+
+
+
 })
 
 module.exports = router;

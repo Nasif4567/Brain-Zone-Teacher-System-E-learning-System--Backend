@@ -96,7 +96,7 @@ router.post("/create", async (req, res) => {
     //   }
     // );
     const payload = verifyToken(token);
-    console.log(payload);
+   
     const { username } = payload;
 
     connection.query(
@@ -136,7 +136,7 @@ router.post("/create", async (req, res) => {
               return;
             }
 
-            console.log("Course created successfully");
+         
             return res.status(200).send({
               message: "Course created successfully",
               courseID,
@@ -196,7 +196,6 @@ router.put("/update", async (req, res) => {
             return;
           }
 
-          console.log("Course updated successfully");
           res.send("Course updated successfully");
         }
       );
@@ -212,7 +211,7 @@ router.get("/allCourses", (req, res) => {
   const payload = verifyToken(token);
 
   const { username } = payload;
-  console.log(username);
+ 
 
   connection.query(
     "SELECT teacherID FROM teachers WHERE username = ?",
@@ -229,7 +228,7 @@ router.get("/allCourses", (req, res) => {
       }
 
       const teacherID = results[0].teacherID;
-      console.log(teacherID);
+
       connection.query(
         "SELECT * FROM courses WHERE teacherID = ?",
         [teacherID],
@@ -239,7 +238,7 @@ router.get("/allCourses", (req, res) => {
             res.status(500).send("Error in fetching courses");
             return;
           }
-          console.log(results);
+        
 
           res.status(200).send(results);
         }

@@ -28,7 +28,7 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
     return res.status(400).send("Token not provided");
   }
   const payload = verifyToken(token);
-  console.log(payload);
+
   const { username } = payload;
 
   connection.query(
@@ -93,7 +93,7 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
 
 router.get("/:courseID", (req, res) => {
   const { courseID } = req.params;
-  console.log(courseID);
+ 
   //get the course content sorted by created_at
   connection.query(
     "SELECT * FROM courseContent WHERE courseID = ? ORDER BY created_at ASC",
@@ -116,7 +116,7 @@ router.get("/:courseID", (req, res) => {
             return;
           }
 
-          console.log(course);
+   
 
           res.status(200).send({
             course: course[0],

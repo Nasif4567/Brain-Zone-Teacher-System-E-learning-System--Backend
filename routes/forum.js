@@ -14,7 +14,7 @@ router.get("/getQuestions/:courseID", (req, res) => {
     const { username } = payload;
     
     connection.query(
-        "SELECT teachers.teacherID FROM teachers INNER JOIN courses ON teachers.teacherID = courses.teacherID WHERE teachers.username = ? AND courses.courseID = ?",
+        "SELECT teachers.teacherID,courses.courseId,courses.courseName FROM teachers INNER JOIN courses ON teachers.teacherID = courses.teacherID WHERE teachers.username = ? AND courses.courseID = ?",
         [payload.username, courseID],
         (error, results) => {
             if (error) {
@@ -28,6 +28,8 @@ router.get("/getQuestions/:courseID", (req, res) => {
             }
     
             const teacherID = results[0].teacherID;
+            const courseName = results[0].courseName;
+            const courseId = results[0].courseId;
             console.log(results)
     
             connection.query(
@@ -41,9 +43,15 @@ router.get("/getQuestions/:courseID", (req, res) => {
                         return;
                     }
                     const questions = results;
-                    //get all the answers for each question which has the same discussion id
-
-                    res.send(questions);
+                    // send the questions and the course name as a response
+                    res.send(
+                        {
+                            questions,
+                            courseName,
+                            courseId
+                        }
+                    );
+                    
 
                     
                 }
@@ -65,6 +73,7 @@ router.get("/getAnswers/:discussionID", (req, res) => {
     const payload = verifyToken(token);
     const { username } = payload;
     
+        
 
 
     const { discussionID } = req.params;
