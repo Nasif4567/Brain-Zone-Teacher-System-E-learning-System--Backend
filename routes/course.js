@@ -4,6 +4,9 @@ const connection = require("../utils/db");
 const { checkIfExists } = require("../utils/helper");
 const { verifyToken } = require("../utils/webToken");
 const { uid } = require("uid");
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 
 // Route to create a new course //	courseID 	courseName 	courseDescription 	courseInstructor 	created_at 	updated_at 	userID 	courseStatus 	courseImage
 //demo data
@@ -24,7 +27,21 @@ const { uid } = require("uid");
 
 */
 
-router.post("/create", async (req, res) => {
+const storage = multer.diskStorage({
+ destination: function (req, file, cb) {
+    const dir = `./content/images/`;
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
+router.post("/create",upload.single('photo'), async (req, res) => {
   const {
     name,
     description,
@@ -111,7 +128,7 @@ router.post("/create", async (req, res) => {
         const teacherID = userResults[0].teacherID;
         const teacherName = userResults[0].name;
         const courseID = uid(16);
-
+        const urlPhoto = req.file.path;
         connection.query(
           "INSERT INTO courses SET ?",
           {
@@ -124,10 +141,10 @@ router.post("/create", async (req, res) => {
             courseDifficulty: difficulty,
             courseLanguage: language,
             courseOutcome: outcome,
-            courseStatus: "Active",
-            courseImage: "default.jpg",
+            courseImage: urlPhoto,
             teacherID,
             courseInstructor: teacherName,
+            courseStatus: "Active",
           },
           (insertError, insertResults) => {
             if (insertError) {

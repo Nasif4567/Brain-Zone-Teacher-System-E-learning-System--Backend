@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/upload/:courseID", upload.single("file"), (req, res) => {
+router.post("/upload/:courseID", upload.fields([{ name: 'file', maxCount: 1 }, { name: 'video', maxCount: 1 }]), (req, res) => {
   //get the id from param
 
   const token = req.cookies.token;
@@ -48,20 +48,23 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
   );
 
   const { courseID } = req.params;
-  const { file } = req;
+  
   const { title, description, type } = req.body;
 
   if (!title || !description ) {
     return res.status(400).send("Please fill in all fields");
   }
-
-  if (!file) {
-    return res.status(400).send("Please upload a file");
+const {file, video} = req.files;
+  if (!file || !video) {
+    return res.status(400).send("Please upload a file and video");
   }
+
   const port = process.env.PORT || 3002;
   const contentID = uid(16);
-  const contentURL = `http://localhost:${port}/content/${courseID}/${file.originalname}`;
-  const fileType = file.mimetype;
+  const contentURL = `http://localhost:${port}/content/${courseID}/${file[0].originalname}`;
+  const fileType = file[0].mimetype;
+  const videoURL = `http://localhost:${port}/content/${courseID}/${video[0].originalname}`;
+  
 
   connection.query(
     "INSERT INTO courseContent SET ?",
@@ -71,7 +74,7 @@ router.post("/upload/:courseID", upload.single("file"), (req, res) => {
       contentTitle: title,
       contentDescription: description,
       contentURL,
-      fileType: fileType.toString(),
+      videoURL,
     },
 
     (error, results) => {
@@ -130,35 +133,17 @@ router.get("/:courseID", (req, res) => {
   );
 });
 
-router.put("/:courseID", upload.single("file"), (req, res) => {
+router.put("/:courseID", upload.fields([{name:'file',maxCount:1},{name:'video',maxCount:1}]), (req, res) => {
   const { courseID } = req.params;
-  const { file } = req;
-  const { title, description,contentID ,deleteExistingFile} = req.body;
+  const { file,video } = req.files
+  const { title, description,contentID ,deleteExistingFile,deleteExistingVideo} = req.body;
 
   if (!title || !description) {
     return res.status(400).send("Please fill in all fields");
   }
 
-  if (!file) {
-    if(deleteExistingFile){
-      connection.query(
-        "UPDATE courseContent SET contentTitle = ?, contentDescription = ?, contentURL = ?, fileType = ? WHERE contentID = ?",
-        [title, description, null, null, contentID],
-        (error, results) => {
-          if (error) {
-            console.error("Error executing SQL query:", error);
-            res.status(500).send("Error in updating content");
-            return;
-          }
+  if (!file || !video) {
     
-          res.status(200).send("Content updated successfully");
-          return;
-        }
-      );
-
-    }
-
-
     connection.query(
       "UPDATE courseContent SET contentTitle = ?, contentDescription = ? WHERE contentID = ?",
       [title, description, contentID],
@@ -169,20 +154,25 @@ router.put("/:courseID", upload.single("file"), (req, res) => {
           return;
         }
 
-        res.status(200).send("Content updated successfully");
+        res.status(200).send({
+          message: "Content updated successfully",
+          contentTitle: title,
+          contentDescription: description,
+          
+        });
       }
     );
-  } else {
+  
 
-    
+
+  } else if (file && video) {
     const port = process.env.PORT || 3002;
-    const contentURL = `http://localhost:${port}/content/${courseID}/${file.originalname}`;
-    const fileType = file.mimetype;
-    
-
+    const contentURL = `http://localhost:${port}/content/${courseID}/${file[0].originalname}`;
+    const fileType = file[0].mimetype;
+    const videoURL = `http://localhost:${port}/content/${courseID}/${video[0].originalname}`;
     connection.query(
-      "UPDATE courseContent SET contentTitle = ?, contentDescription = ?, contentURL = ?, fileType = ? WHERE contentID = ?",
-      [title, description, contentURL, fileType, contentID],
+      "UPDATE courseContent SET contentTitle = ?, contentDescription = ?, contentURL = ?, videoURL = ? WHERE contentID = ?",
+      [title, description, contentURL, videoURL, contentID],
       (error, results) => {
         if (error) {
           console.error("Error executing SQL query:", error);
@@ -190,17 +180,13 @@ router.put("/:courseID", upload.single("file"), (req, res) => {
           return;
         }
 
-        res.status(200).send(
-          {
-            message: "Content updated successfully",
-            fileType,
-            contentURL,
-           contentTitle: title,
-            contentDescription: description,
-            
-
-          }
-        );
+        res.status(200).send({
+          message: "Content updated successfully",
+          contentTitle: title,
+          contentDescription: description,
+          fileType,
+          contentURL,
+        });
       }
     );
   }
