@@ -1,4 +1,4 @@
-# Backend API for LMS (Learning Management System)
+# Backend API for Brain E Leanring Platfrom Student System
 ## Description
 This has been created using express.js and mysql. It is a backend API for a Learning Management System. 
 
