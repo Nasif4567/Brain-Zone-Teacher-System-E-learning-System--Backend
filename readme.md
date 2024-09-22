@@ -13,9 +13,6 @@ This has been created using express.js and mysql. It is a backend API for a Lear
 
 
 4. Run `npm start` to start the server
-5. The server will start on `http://localhost:3000`
-
-## API Endpoints completed so far
-1. `GET /register` - Create new Account for the teacher
+5. The server will start on `http://localhost:3001`
 
 
